@@ -17,4 +17,4 @@
   - jsonwebtoken `to authenticate users`
   - bcryptjs `to hash user password`
 
-- <FrontEnd> `coming soom`
+- FrontEnd `coming soom`
