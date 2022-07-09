@@ -4,7 +4,7 @@ import { createError } from "../utils/error.js";
 
 //create a new Room
 export const createRoom = async (req, res, next) => {
-  const hotelId = req.params.hotelId;
+  const hotelId = req.params.hotelid;
   const newRoom = new Room(req.body);
 
   try {
@@ -12,7 +12,7 @@ export const createRoom = async (req, res, next) => {
     try {
       await Hotel.findByIdAndUpdate(
         hotelId,
-        { $push: { rooms: savedRoom } },
+        { $push: { rooms: savedRoom._id } },
         { new: true }
       );
     } catch (error) {
@@ -38,12 +38,19 @@ export const updateRoom = async (req, res, next) => {
   }
 };
 export const deleteRoom = async (req, res, next) => {
+  const hotelId = req.params.hotelid;
   try {
     await Room.findByIdAndDelete(req.params.id);
-
+    try {
+      await Hotel.findByIdAndUpdate(hotelId, {
+        $pull: { rooms: req.params.id },
+      });
+    } catch (error) {
+      next(error);
+    }
     res.status(200).json("Room has been deleted");
   } catch (error) {
-    res.status(400).json(error);
+    next(error);
   }
 };
 export const getSingelRoom = async (req, res, next) => {

@@ -6,12 +6,13 @@ import {
   updateRoom,
   deleteRoom,
 } from "../controllers/room.js";
+import { verifyAdmin } from "../utils/verify.js";
 const router = express.Router();
 
-router.post("/", createRoom);
+router.post("/:hotelid", verifyAdmin, createRoom);
 router.get("/", getAllRooms);
 router.get("/:id", getSingelRoom);
-router.put("/:id", updateRoom);
-router.delete("/:id", deleteRoom);
+router.put("/:id", verifyAdmin, updateRoom);
+router.delete("/:id/:hotelid", verifyAdmin, deleteRoom);
 
 export default router;
