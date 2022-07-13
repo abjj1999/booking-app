@@ -15,6 +15,8 @@
 
 .fbImg {
     width: 100%;
+    height: 250px;
+    object-fit: cover;
 }
 
 .fbName {
@@ -22,7 +24,8 @@
 }
 
 .fbCity {
-    font-weight: 300;
+    font-weight: bold;
+    color: #333;
 }
 
 .fbPrice {

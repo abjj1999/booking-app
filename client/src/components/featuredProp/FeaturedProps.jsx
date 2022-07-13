@@ -1,64 +1,32 @@
 import React from "react";
+import useFetch from "../../hooks/useFetch";
 import "./featuredProps.css";
+
 function FeaturedProps() {
+  const { data, loading, error } = useFetch("/hotels?featured=true&limit=4");
+
   return (
     <div className="fp">
-      <div className="fpItem">
-        <img
-          src="https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-          alt=""
-          className="fbImg"
-        />
-        <span className="fbName">Hotel</span>
-        <span className="fbCity">Houston</span>
-        <span className="fbPrice">Stating from 56$</span>
-        <div className="fbRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
-      <div className="fpItem">
-        <img
-          src="https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-          alt=""
-          className="fbImg"
-        />
-        <span className="fbName">Hotel</span>
-        <span className="fbCity">Houston</span>
-        <span className="fbPrice">Stating from 56$</span>
-        <div className="fbRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
-      <div className="fpItem">
-        <img
-          src="https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-          alt=""
-          className="fbImg"
-        />
-        <span className="fbName">Hotel</span>
-        <span className="fbCity">Houston</span>
-        <span className="fbPrice">Stating from 56$</span>
-        <div className="fbRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
-      <div className="fpItem">
-        <img
-          src="https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-          alt=""
-          className="fbImg"
-        />
-        <span className="fbName">Hotel</span>
-        <span className="fbCity">Houston</span>
-        <span className="fbPrice">Stating from 56$</span>
-        <div className="fbRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
+      {loading ? (
+        "Loading"
+      ) : (
+        <>
+          {data.map((item) => (
+            <div className="fpItem" key={item._id}>
+              <img src={item.photo[0]} alt="" className="fbImg" />
+              <span className="fbName">{item.name}</span>
+              <span className="fbCity">{item.city}</span>
+              <span className="fbPrice">Stating from {item.CheapestPrice}</span>
+              {item.rating && (
+                <div className="fbRating">
+                  <button>8.9</button>
+                  <span>Excellent</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 }
