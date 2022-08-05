@@ -29,7 +29,7 @@ function SearchItem({ item }) {
         <div className="siDetailTexts">
           <span className="siPrice">{item.CheapestPrice}</span>
           <span className="siTax">Include taxes and fees</span>
-          <Link to={`/hotel/${item._id}`}>
+          <Link to={`/hotels/${item._id}`}>
             <button className="sibtn">See Availability</button>
           </Link>
         </div>
