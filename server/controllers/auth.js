@@ -24,8 +24,12 @@ export const login = async (req, res, next) => {
     if (!user) return next(createError(400, "user not found"));
 
     //password validator
-    const isPassword = await bcrypt.hash(req.body.password, user.password);
-    if (!isPassword)
+    const isPasswordCorrect = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+
+    if (!isPasswordCorrect)
       return next(createError(400, "password or username wrong"));
 
     //token part
