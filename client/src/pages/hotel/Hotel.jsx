@@ -12,15 +12,20 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useState } from "react";
 import useFetch from "../../hooks/useFetch";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SearchCont } from "../../context/SearchCont";
+import { AuthCont } from "../../context/AuthCont";
+import Model from "../../components/model/Model";
 
 const Hotel = () => {
   const location = useLocation();
   const pathId = location.pathname.split("/")[2];
+  const { user } = useContext(AuthCont);
+  const navigate = useNavigate();
   // console.log(pathId);
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
+  const [openModel, setOpenModel] = useState(false);
 
   const { data, loading, error } = useFetch(`/hotels/find/${pathId}`);
   // console.log(error);
@@ -53,6 +58,14 @@ const Hotel = () => {
     }
 
     setSlideNumber(newSlideNumber);
+  };
+
+  const handleClick = () => {
+    if (user) {
+      setOpenModel(true);
+    } else {
+      navigate("/login");
+    }
   };
 
   return (
@@ -129,13 +142,16 @@ const Hotel = () => {
                   <b>$ {days * data.CheapestPrice * options.room}</b> ({days}{" "}
                   nights)
                 </h2>
-                <button>Reserve or Book Now!</button>
+                <button onClick={handleClick}>Reserve or Book Now!</button>
               </div>
             </div>
           </div>
           <MailList />
           <Footer />
         </div>
+      )}
+      {openModel && (
+        <Model key={pathId} setOpenModel={setOpenModel} hotelId={pathId} />
       )}
     </div>
   );
