@@ -1,25 +1,19 @@
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
 import React from "react";
 import { useContext } from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { SearchCont } from "../../context/SearchCont";
 import useFetch from "../../hooks/useFetch";
+import "./model.css";
 
 function Model({ setOpenModel, hotelId }) {
   const [selectedRooms, setSelectedRooms] = useState([]);
   const { data, loading, error } = useFetch(`/hotels/room/${hotelId}`);
   const { dates } = useContext(SearchCont);
 
-  const handleSelect = (e) => {
-    const checked = e.target.checked;
-    const value = e.target.value;
-    setSelectedRooms(
-      checked
-        ? [...selectedRooms, value]
-        : selectedRooms.filter((item) => item !== value)
-    );
-  };
   const getDatesRanges = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -35,9 +29,43 @@ function Model({ setOpenModel, hotelId }) {
   const allDates = getDatesRanges(dates[0].startDate, dates[0].endDate);
 
   //check if dates are avalible
+  const isAvailable = (roomNum) => {
+    for (var i = 0; i < roomNum.unavailableDate.length; i++) {
+      console.log(roomNum.unavailableDate[i]);
+    }
+    const isFound = roomNum.unavailableDate.some((date) => {
+      allDates.includes(new Date(date).getTime());
+    });
 
-  const handleClick = () => {
+    return !isFound;
+  };
+
+  const handleSelect = (e) => {
+    const checked = e.target.checked;
+    const value = e.target.value;
+    setSelectedRooms(
+      checked
+        ? [...selectedRooms, value]
+        : selectedRooms.filter((item) => item !== value)
+    );
+  };
+  const navigate = useNavigate();
+  const handleClick = async () => {
     //console.log("Hllo");
+    try {
+      await Promise.all(
+        selectedRooms.map((roomId) => {
+          const res = axios.put(`/rooms/availability/${roomId}`, {
+            dates: allDates,
+          });
+          navigate("/");
+          console.log(res.data);
+        })
+      );
+      setOpenModel(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="reserve" key={hotelId}>
@@ -60,16 +88,19 @@ function Model({ setOpenModel, hotelId }) {
                 <b>{item.price}$$</b>
               </div>
             </div>
-            {item.roomNumbers.map((roomNum) => (
-              <div className="room" key={roomNum._id}>
-                <label>{roomNum.number}</label>
-                <input
-                  type="checkbox"
-                  value={roomNum._id}
-                  onChange={handleSelect}
-                />
-              </div>
-            ))}
+            <div className="rSelectRooms">
+              {item.roomNumbers.map((roomNum) => (
+                <div className="room" key={roomNum._id}>
+                  <label>{roomNum.number}</label>
+                  <input
+                    type="checkbox"
+                    value={roomNum._id}
+                    onChange={handleSelect}
+                    disabled={!isAvailable(roomNum)}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         ))}
         <button onClick={handleClick} className="rButton">
